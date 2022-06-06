@@ -1,9 +1,8 @@
 package com.mastery.java.task.service.impl;
 
 import com.mastery.java.task.dao.EmployeeDao;
-import com.mastery.java.task.dto.model.Employee;
+import com.mastery.java.task.entity.Employee;
 import com.mastery.java.task.service.EmployeeService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,8 +10,12 @@ import java.util.List;
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-    @Autowired
-    private EmployeeDao employeeDao;
+
+    private final EmployeeDao employeeDao;
+
+    public EmployeeServiceImpl(EmployeeDao employeeDao) {
+        this.employeeDao = employeeDao;
+    }
 
     @Override
     public List<Employee> findAllEmployees() {

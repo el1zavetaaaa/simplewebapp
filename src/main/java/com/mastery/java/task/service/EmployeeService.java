@@ -1,6 +1,6 @@
 package com.mastery.java.task.service;
 
-import com.mastery.java.task.dto.model.Employee;
+import com.mastery.java.task.entity.Employee;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.mastery.java.task.dto.model;
+package com.mastery.java.task.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
@@ -17,7 +17,7 @@ public class Employee {
     private String lastName;
     private Integer departmentId;
     private String jobTitle;
-    private Gender genderId;
+    private Gender gender;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date birthdayDate;
 

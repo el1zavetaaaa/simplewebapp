@@ -1,9 +1,9 @@
 package com.mastery.java.task.dao.impl;
 
 import com.mastery.java.task.dao.EmployeeDao;
-import com.mastery.java.task.dto.mapper.EmployeeMapper;
-import com.mastery.java.task.dto.model.Employee;
+import com.mastery.java.task.entity.Employee;
 import com.mastery.java.task.exception.EmployeeNotFoundException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +11,7 @@ import java.util.List;
 
 @Repository
 public class EmployeeDaoImpl implements EmployeeDao {
+
     private final JdbcTemplate jdbcTemplate;
 
     public EmployeeDaoImpl(JdbcTemplate jdbcTemplate) {
@@ -19,12 +20,12 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
 
     public List<Employee> findAllEmployees() {
-        return jdbcTemplate.query("SELECT*FROM employees", new EmployeeMapper());
+        return jdbcTemplate.query("SELECT*FROM employees", new BeanPropertyRowMapper<>(Employee.class));
     }
 
     public Employee findEmployeeById(Long id) {
-        return jdbcTemplate.query("SELECT*FROM employees WHERE employeeId=?", new Object[]{id},
-                        new EmployeeMapper())
+        return jdbcTemplate.query("SELECT*FROM employees WHERE employee_id=?",
+                        new BeanPropertyRowMapper<>(Employee.class), new Object[]{id})
                 .stream()
                 .findAny()
                 .orElseThrow(() -> EmployeeNotFoundException.objectNotFound(id));
@@ -37,7 +38,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
                 employee.getLastName(),
                 employee.getDepartmentId(),
                 employee.getJobTitle(),
-                employee.getGenderId().getId(),
+                employee.getGender().getName(),
                 employee.getBirthdayDate());
         return employee;
     }
@@ -48,21 +49,21 @@ public class EmployeeDaoImpl implements EmployeeDao {
                         "last_name=?, " +
                         "department_id=?, " +
                         "job_title=?, " +
-                        "gender_id=?, " +
+                        "gender=?, " +
                         "birthday_date=? " +
-                        "WHERE employeeId=?",
+                        "WHERE employee_id=?",
                 employee.getFirstName(),
                 employee.getLastName(),
                 employee.getDepartmentId(),
                 employee.getJobTitle(),
-                employee.getGenderId().getId(),
+                employee.getGender().getName(),
                 employee.getBirthdayDate(),
                 id);
         return employee;
     }
 
     public void deleteEmployee(Long id) {
-        jdbcTemplate.update("DELETE FROM employees WHERE employeeId=?",
+        jdbcTemplate.update("DELETE FROM employees WHERE employee_id=?",
                 id);
     }
 }

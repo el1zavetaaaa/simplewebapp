@@ -1,28 +1,30 @@
 package com.mastery.java.task.rest;
 
-import com.mastery.java.task.dto.model.Employee;
+import com.mastery.java.task.entity.Employee;
 import com.mastery.java.task.service.EmployeeService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping(value = "/employees")
 public class EmployeeController {
 
-    @Autowired
-    private EmployeeService employeeService;
+
+    private final EmployeeService employeeService;
+
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Employee>> getAllEmployees() {
         final List<Employee> employees = employeeService.findAllEmployees();
-        return !employees.isEmpty()
-                ? new ResponseEntity<>(employees, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -42,12 +44,12 @@ public class EmployeeController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id,
+    public ResponseEntity<Employee> updateEmployee(@PathVariable("id") Long employeeId,
                                                    @RequestBody Employee employee) {
-        employeeService.updateEmployeeById(id, employee);
-        return employee != null
-                ? new ResponseEntity<>(employee, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+        if (Objects.equals(employeeId, employee.getEmployeeId())) {
+            employeeService.updateEmployeeById(employeeId, employee);
+            return new ResponseEntity<>(employee, HttpStatus.OK);
+        } else return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 
     @DeleteMapping(value = "/{id}")
