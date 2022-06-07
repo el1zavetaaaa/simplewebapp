@@ -5,12 +5,9 @@ import lombok.*;
 
 import java.util.Date;
 
-
+@Data
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
-@Getter
-@Setter
-@ToString
 public class Employee {
     private Long employeeId;
     private String firstName;

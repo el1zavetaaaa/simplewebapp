@@ -49,7 +49,7 @@ public class EmployeeController {
         if (Objects.equals(employeeId, employee.getEmployeeId())) {
             employeeService.updateEmployeeById(employeeId, employee);
             return new ResponseEntity<>(employee, HttpStatus.OK);
-        } else return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+        } else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping(value = "/{id}")
