@@ -4,8 +4,8 @@ CREATE SCHEMA public;
 create table employees
 (
     employee_id   bigserial primary key,
-    first_name    text unique not null,
-    last_name     text unique not null,
+    first_name    text not null,
+    last_name     text not null,
     department_id bigserial   not null,
     job_title     text        not null,
     gender        text        not null,
