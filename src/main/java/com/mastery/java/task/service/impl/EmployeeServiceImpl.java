@@ -2,15 +2,14 @@ package com.mastery.java.task.service.impl;
 
 import com.mastery.java.task.entity.Employee;
 import com.mastery.java.task.exception.EmployeeNotFoundException;
-import com.mastery.java.task.exception.ValidationException;
 import com.mastery.java.task.repository.EmployeeRepository;
 import com.mastery.java.task.service.EmployeeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -26,14 +25,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<Employee> findAllEmployees(String name, String surname) {
 
-        return employeeDao.findByFirstNameIsContainingAndLastNameIsContaining(name, surname);
+        return employeeDao.findByFirstNameContainingAndLastNameContaining(name, surname);
     }
 
     @Override
     public Employee findEmployeeById(Long id) {
         return employeeDao.findById(id)
                 .orElseThrow(() ->
-                        new EmployeeNotFoundException("Check whether employee with entering id " + id + " exists!"));
+                        new EmployeeNotFoundException("The chosen employee does not exist!"));
     }
 
     @Override
@@ -42,24 +41,18 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public Employee updateEmployeeById(Long id, Employee employee) {
         Employee updatedEmployee = employeeDao.findById(id)
                 .orElseThrow(() ->
-                        new EmployeeNotFoundException("Check whether employee with entering id " + id + " exists!"));
-        if (Objects.equals(id, employee.getEmployeeId())) {
-            updatedEmployee.setFirstName(employee.getFirstName());
-            updatedEmployee.setLastName(employee.getLastName());
-            updatedEmployee.setDepartmentId(employee.getDepartmentId());
-            updatedEmployee.setJobTitle(employee.getJobTitle());
-            updatedEmployee.setGender(employee.getGender());
-            updatedEmployee.setBirthdayDate(employee.getBirthdayDate());
-            return employeeDao.save(updatedEmployee);
-        } else {
-            warn.warn("Employee wasn't updated as the customer set the wrong id " + employee.getEmployeeId() +
-                    ", however wanted to update the employee with id " + id + "!");
-            throw new ValidationException("Employee wasn't updated as the customer set the wrong id " + employee.getEmployeeId() +
-                    ", however wanted to update the employee with id " + id + "!");
-        }
+                        new EmployeeNotFoundException("The chosen employee does not exist!"));
+        updatedEmployee.setFirstName(employee.getFirstName());
+        updatedEmployee.setLastName(employee.getLastName());
+        updatedEmployee.setDepartmentId(employee.getDepartmentId());
+        updatedEmployee.setJobTitle(employee.getJobTitle());
+        updatedEmployee.setGender(employee.getGender());
+        updatedEmployee.setBirthdayDate(employee.getBirthdayDate());
+        return employeeDao.save(updatedEmployee);
     }
 
     @Override

@@ -6,6 +6,9 @@ import com.mastery.java.task.validation.NameValidator;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 
 @NoArgsConstructor
@@ -20,28 +23,37 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "employee_id")
+    @Positive(message = "id can only be a positive numbers")
     private Long employeeId;
 
     @Column(name = "first_name", nullable = false)
-    @NameValidator
+    @NameValidator(message = "name could consist of letters only")
+    @NotNull(message = "first name can not be null value")
+    @NotBlank(message = "first name can not be blank")
     private String firstName;
 
     @Column(name = "last_name", nullable = false)
-    @NameValidator
+    @NameValidator(message = "last name could consist of letters only")
+    @NotNull(message = "last name can not be null value")
+    @NotBlank(message = "last name can not be blank")
     private String lastName;
 
+    @NotNull(message = "department id can not be null value")
     @Column(name = "department_id", nullable = false)
     private Integer departmentId;
 
     @Column(name = "job_title", nullable = false)
+    @NotBlank(message = "job title can not be blank")
+    @NotNull(message = "job title can not be null value")
     private String jobTitle;
 
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "gender can not be null value")
     private Gender gender;
 
     @Column(name = "birthday_date", nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @AgeValidator
+    @AgeValidator(message = "employees could be 18 years old only")
     private LocalDate birthdayDate;
 
 

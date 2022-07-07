@@ -2,7 +2,7 @@ package com.mastery.java.task.service;
 
 import com.mastery.java.task.entity.Employee;
 import com.mastery.java.task.exception.EmployeeNotFoundException;
-import com.mastery.java.task.exception.ValidationException;
+
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ public interface EmployeeService {
 
     Employee addEmployee(Employee employee);
 
-    Employee updateEmployeeById(Long id, Employee employee) throws EmployeeNotFoundException, ValidationException;
+    Employee updateEmployeeById(Long id, Employee employee);
 
     void deleteEmployee(Long id);
 }

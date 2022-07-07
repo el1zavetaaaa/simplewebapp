@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
-    List<Employee> findByFirstNameIsContainingAndLastNameIsContaining(String name, String surname);
+    List<Employee> findByFirstNameContainingAndLastNameContaining(String name, String surname);
 }
