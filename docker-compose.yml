@@ -1,0 +1,39 @@
+services:
+  app:
+    image: simplewebapp:0.0.1-SNAPSHOT
+    container_name: employeeservice
+    build:
+      context: .
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_ACTIVEMQ_BROKER_URL: tcp://activemq:61616
+    depends_on:
+      - db
+      - activemq
+    ports:
+      - "8080:8080"
+
+  db:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: employees
+    ports:
+      - "5432:5432"
+
+
+  activemq:
+    image: rmohr/activemq:latest
+    volumes:
+       - C:/Program Files/apache-activemq-5.17.1/bin/win64/activemq.bat
+    ports:
+      - "61616:61616"
+      - "8161:8161"
+    environment:
+      ACTIVEMQ_ADMIN_LOGIN: admin
+      ACTIVEMQ_ADMIN_PASSWORD: admin
+
+

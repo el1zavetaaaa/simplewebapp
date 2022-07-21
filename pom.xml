@@ -87,16 +87,35 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Spring Boot Starter AOP -->
+        <!-- Spring Boot Starter ActiveMQ -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
+            <artifactId>spring-boot-starter-activemq</artifactId>
+        </dependency>
+
+        <!-- Liquibase/liquibase-core -->
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>4.12.0</version>
         </dependency>
 
     </dependencies>
 
     <build>
         <plugins>
+            <!-- Liquibase plugin -->
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>4.12.0</version>
+                <configuration>
+                    <propertyFile>
+                        src/main/resources/liquibase.properties
+                    </propertyFile>
+                    <changeLogFile>src/main/resources/db/changelog/changelog.xml</changeLogFile>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

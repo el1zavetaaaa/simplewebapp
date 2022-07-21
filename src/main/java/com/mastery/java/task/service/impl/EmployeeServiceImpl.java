@@ -1,11 +1,10 @@
 package com.mastery.java.task.service.impl;
 
 import com.mastery.java.task.entity.Employee;
-import com.mastery.java.task.exception.EmployeeNotFoundException;
+import com.mastery.java.task.jms.MessageProducer;
+import com.mastery.java.task.exception.EmployeeServiceNotFoundException;
 import com.mastery.java.task.repository.EmployeeRepository;
 import com.mastery.java.task.service.EmployeeService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,12 +13,12 @@ import java.util.List;
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-    private static final Logger warn = LoggerFactory.getLogger("warn");
-
     private final EmployeeRepository employeeDao;
+    private final MessageProducer employeeProducer;
 
-    public EmployeeServiceImpl(EmployeeRepository employeeDao) {
+    public EmployeeServiceImpl(EmployeeRepository employeeDao, MessageProducer employeeProducer) {
         this.employeeDao = employeeDao;
+        this.employeeProducer = employeeProducer;
     }
 
     @Override
@@ -32,7 +31,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Employee findEmployeeById(Long id) {
         return employeeDao.findById(id)
                 .orElseThrow(() ->
-                        new EmployeeNotFoundException("The chosen employee does not exist!"));
+                        new EmployeeServiceNotFoundException(String.format("Employee with id %d does not exist!",id)));
     }
 
     @Override
@@ -45,7 +44,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Employee updateEmployeeById(Long id, Employee employee) {
         Employee updatedEmployee = employeeDao.findById(id)
                 .orElseThrow(() ->
-                        new EmployeeNotFoundException("The chosen employee does not exist!"));
+                        new EmployeeServiceNotFoundException(String.format("Employee with id %d does not exist!",id)));
         updatedEmployee.setFirstName(employee.getFirstName());
         updatedEmployee.setLastName(employee.getLastName());
         updatedEmployee.setDepartmentId(employee.getDepartmentId());
@@ -58,5 +57,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void deleteEmployee(Long id) {
         employeeDao.deleteById(id);
+    }
+
+    @Override
+    public Employee messagesForAddingEmployee(Employee employee) {
+        employeeProducer.sendTo(employee);
+        return employee;
     }
 }

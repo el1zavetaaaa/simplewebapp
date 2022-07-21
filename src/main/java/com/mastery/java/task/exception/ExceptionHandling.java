@@ -1,65 +1,66 @@
 package com.mastery.java.task.exception;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.ConversionNotSupportedException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.NoHandlerFoundException;
 
-
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 
 
+@Slf4j
 @RestControllerAdvice
-public class ExceptionHandling {
-    private final Logger logger = LoggerFactory.getLogger(ExceptionHandling.class);
+public class    ExceptionHandling {
+    String errorMsg;
 
-    @ExceptionHandler(EmployeeNotFoundException.class)
-    public ResponseEntity<String> handleEmployeeNotFoundException(HttpServletRequest request,
-                                                                  EmployeeNotFoundException employeeException) {
-        logger.error("Employee can not be found! URL:{}", request.getRequestURL());
-        return new ResponseEntity<>(employeeException.getMessage(), HttpStatus.NOT_FOUND);
+    @ExceptionHandler(EmployeeServiceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleEmployeeNotFoundException(EmployeeServiceNotFoundException employeeException) {
+        log.error("Employee can not be found! ", employeeException);
+        return employeeException.getMessage();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException notValidException){
-        logger.error("Employee wasn't saved to db! {}", notValidException.getMessage());
-        return new ResponseEntity<>(notValidException.getMessage(),HttpStatus.BAD_REQUEST);
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleValidationException(MethodArgumentNotValidException notValidException){
+        log.error("Employee wasn't saved to db! ", notValidException);
+        return notValidException.getMessage();
 
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleConstraintViolationException(ConstraintViolationException constraintViolationException){
+        log.error("Employee wasn't saved to db! ", constraintViolationException);
+        return constraintViolationException.getMessage();
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleValidationException(HttpMessageNotReadableException
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleValidationException(HttpMessageNotReadableException
                                                                     notReadableException){
-        logger.error("Employee wasn't saved to db! {}", notReadableException.getMessage());
-        return new ResponseEntity<>(notReadableException.getMessage(),HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<String> handleNotFoundException(NoHandlerFoundException
-                                                                      noHandlerFoundException){
-        return new ResponseEntity<>(noHandlerFoundException.getMessage(),HttpStatus.NOT_FOUND);
+        log.error("Employee wasn't saved to db! ", notReadableException);
+        return notReadableException.getMessage();
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<String> handleMethodNotSupportedExcetion(HttpRequestMethodNotSupportedException
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    public String handleMethodNotSupportedException(HttpRequestMethodNotSupportedException
                                                                                methodNotSupportedException){
-        logger.error("Employee wasn't saved to db! {}", methodNotSupportedException.getMessage());
-        return new ResponseEntity<>(methodNotSupportedException.getMessage(),HttpStatus.METHOD_NOT_ALLOWED);
+        log.error("Employee wasn't saved to db! ", methodNotSupportedException);
+        return methodNotSupportedException.getMessage();
     }
 
-    @ExceptionHandler(ConversionNotSupportedException.class)
-    public ResponseEntity<String> handleInternalServerError(ConversionNotSupportedException
-                                                                        conversionNotSupportedException){
-        logger.error("Employee wasn't saved to db! {}", conversionNotSupportedException.getMessage());
-        return new ResponseEntity<>(conversionNotSupportedException.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public String handleInternalServerError(Exception exception){
+        errorMsg = "There is a Server error!";
+        log.error("There is a server Error! ", exception);
+        return errorMsg;
     }
 
 }

@@ -2,12 +2,12 @@ package com.mastery.java.task.service;
 
 import com.mastery.java.task.entity.Employee;
 import com.mastery.java.task.entity.Gender;
-import com.mastery.java.task.exception.EmployeeNotFoundException;
+import com.mastery.java.task.exception.EmployeeServiceNotFoundException;
 import com.mastery.java.task.repository.EmployeeRepository;
 import com.mastery.java.task.service.impl.EmployeeServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -28,13 +28,9 @@ public class EmployeeServiceTest {
     @Mock
     private EmployeeRepository employeeRepository;
 
+    @InjectMocks
     EmployeeServiceImpl employeeServiceImpl;
     Random random = new Random();
-
-    @BeforeEach
-    void initEmployeeService() {
-        employeeServiceImpl = new EmployeeServiceImpl(employeeRepository);
-    }
 
     @Test
     public void findAllEmployees() {
@@ -70,7 +66,7 @@ public class EmployeeServiceTest {
 
         Optional<Employee> foundEmployee = Optional.ofNullable(employeeServiceImpl.findEmployeeById(presentId));
         assertEquals(foundEmployee, Optional.of(employee));
-        assertThrows(EmployeeNotFoundException.class, () -> employeeServiceImpl.findEmployeeById(absentId));
+        assertThrows(EmployeeServiceNotFoundException.class, () -> employeeServiceImpl.findEmployeeById(absentId));
     }
 
     @Test
@@ -103,7 +99,7 @@ public class EmployeeServiceTest {
         when(employeeRepository.findById(presentId)).thenReturn(Optional.of(employee));
 
         when(employeeRepository.findById(absentId))
-                .thenThrow(new EmployeeNotFoundException("there is no employee with such id " + absentId + "!"));
+                .thenThrow(new EmployeeServiceNotFoundException("there is no employee with such id " + absentId + "!"));
 
         Employee updatedEmployee = new Employee(presentId, updatedFirstName, updatedLastName
                 , updatedDepartmentId, updatedJobTitle, updatedGender, updatedLocaleDate);
@@ -112,7 +108,7 @@ public class EmployeeServiceTest {
 
         employeeServiceImpl.updateEmployeeById(presentId, updatedEmployee);
 
-        assertThrows(EmployeeNotFoundException.class, () ->
+        assertThrows(EmployeeServiceNotFoundException.class, () ->
                 employeeServiceImpl.updateEmployeeById(absentId, updatedEmployee));
 
         assertThat(updatedEmployee.getFirstName()).isEqualTo(updatedFirstName);
